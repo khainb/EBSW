@@ -1,0 +1,40 @@
+{    
+    "device": "cuda",
+
+    "seed":1,
+
+    "test_origin": true,
+
+    "add_noise": false,
+    "noise_adder":"random",
+    "mean_noiseadder":0.0,
+    "std_noiseadder": 1.0,
+
+    "dataset_type": "modelnet40",
+    "root": "dataset/dataset/modelnet40_ply_hdf5_2048/",
+    "num_workers": 0,
+    "shuffle": false,
+    "num_projs": 1000,
+    "num_points": 2048,
+
+    "architecture": "pointnet",
+    "model_path": "epoch_20.pth",
+
+    "embedding_size": 256,
+    "input_channels": 3,
+
+    "save_folder": "reconstruction/model/modelnet40/",
+    "bin": 50,
+
+    "output_channels": 3,
+    "normalize": true,
+
+    "prim_caps_size": 1024,
+    "prim_vec_size": 16,
+    "latent_caps_size": 64,
+    "latent_vec_size": 64,
+
+    "batch_size": 64,
+    "criteria_batch_size": 64,
+    "evaluator_type": "based_on_comparing_set_pcs"
+}
