@@ -138,11 +138,6 @@ def SIREBSW(X, Y, L=1,T=10, p=2,f_type="poly",copy=True,eps=0,rho=2, device="cpu
 
             return 1. / p * torch.pow(wasserstein_distances_detach.mean(), (1. - p) / p) * (
                     wasserstein_distances_detach * torch.log(wasserstein_distances * f_weights / (constant))).mean()
-            # theta_constant = rand_projections(dim, L * T, device)
-            # distances = one_dimensional_Wasserstein_prod(X, Y, theta_constant, p=p).view(L, T)
-            #
-            # return 1. / p * torch.pow(wasserstein_distances_detach.mean(), (1. - p) / p) * (
-            #             wasserstein_distances_detach *  (torch.log(wasserstein_distances) + wasserstein_distances -torch.logsumexp(distances,dim=1,keepdim=True) ) ).mean()
         elif (f_type == "identity"):
             theta_constant = rand_projections(dim, L * T, device)
             distances = one_dimensional_Wasserstein_prod(X, Y, theta_constant, p=p).view(L, T)
@@ -199,11 +194,6 @@ def IMHEBSW(X, Y, L=1,T=10,M=0,N=1, p=2,f_type="poly",copy=True,eps=0,rho=2, dev
 
             return 1. / p * torch.pow(wasserstein_distances_detach.mean(), (1. - p) / p) * (
                     wasserstein_distances_detach * torch.log(wasserstein_distances * f_weights / (constant))).mean()
-            # theta_constant = rand_projections(dim, L * T, device)
-            # distances = one_dimensional_Wasserstein_prod(X, Y, theta_constant, p=p).view(L, T)
-            #
-            # return 1. / p * torch.pow(wasserstein_distances_detach.mean(), (1. - p) / p) * (
-            #             wasserstein_distances_detach *  (torch.log(wasserstein_distances) + wasserstein_distances -torch.logsumexp(distances,dim=1,keepdim=True) ) ).mean()
         elif (f_type == "identity"):
             theta_constant = rand_projections(dim, L * T, device)
             distances = one_dimensional_Wasserstein_prod(X, Y, theta_constant, p=p).view(L, T)
@@ -262,11 +252,6 @@ def RMHEBSW(X, Y, L=1,T=10,M=0,N=1,kappa=10, p=2,f_type="poly",copy=True,eps=0,r
 
             return 1. / p * torch.pow(wasserstein_distances_detach.mean(), (1. - p) / p) * (
                     wasserstein_distances_detach * torch.log(wasserstein_distances * f_weights / (constant))).mean()
-            # theta_constant = rand_projections(dim, L * T, device)
-            # distances = one_dimensional_Wasserstein_prod(X, Y, theta_constant, p=p).view(L, T)
-            #
-            # return 1. / p * torch.pow(wasserstein_distances_detach.mean(), (1. - p) / p) * (
-            #             wasserstein_distances_detach *  (torch.log(wasserstein_distances) + wasserstein_distances -torch.logsumexp(distances,dim=1,keepdim=True) ) ).mean()
         elif (f_type == "identity"):
             theta_constant = rand_projections(dim, L * T, device)
             distances = one_dimensional_Wasserstein_prod(X, Y, theta_constant, p=p).view(L, T)
