@@ -256,14 +256,6 @@ def main():
         else:
             raise Exception("Unknown learning rate scheduler.")
 
-        if "amortized" in args["loss"]:
-            f_scheduler = LinearLrDecay(
-                dic["f_optimizer"],
-                args.s_lr,
-                0.0,
-                0,
-                args["num_epochs"] * len(train_loader))
-
     # evaluator
     if args["evaluator"] == "based_on_train_loss":
         args["eval_criteria"] = "loss_func"
@@ -379,8 +371,6 @@ def main():
             # adjust scheduler
             if args["use_scheduler"]:
                 scheduler.step()
-                if ("amortized" in args["loss"]) and epoch >= dic["amortize_start_epoch"]:
-                    f_scheduler.step()
 
             # write tensorboard log
             info = {"train_loss": train_loss.item(), "learning rate": get_lr(optimizer)}

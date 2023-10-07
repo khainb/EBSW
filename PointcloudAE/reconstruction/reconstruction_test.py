@@ -168,7 +168,7 @@ def main():
                 reconstruction, batch = reconstruction[:, :, :3], inp
 
             chamfer_list.append(chamfer.forward(reconstruction.contiguous(), batch)["loss"].item())
-            swd_list.append(np.sqrt(swd.forward(reconstruction, batch)["loss"].item()))
+            swd_list.append(np.sqrt(swd.forward(reconstruction, batch)["loss"].item())/np.sqrt(2048))
 
             try:
                 emd_list.append(emd.forward(reconstruction, batch)["loss"].item())

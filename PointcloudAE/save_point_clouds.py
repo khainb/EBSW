@@ -112,21 +112,7 @@ def save_reconstruction(samples, model_name):
 
 
 list_full_models = [
-    # 'chamfer',
-    # 'emd',
     "swd",
-    "msw_iter50",
-    # 'asw',
-    "vsw_kappa1_iter50",
-    # 'amortized_msw_linear',
-    # 'amortized_msw_glinear',
-    # 'amortized_msw_nonlinear',
-    # 'amortized_vsw_linear_kappa1',
-    # 'amortized_vsw_glinear_kappa1',
-    # 'amortized_vsw_nonlinear_kappa1',
-    # 'amortized_vsw_attn_dim64_kappa1',
-    # 'amortized_vsw_eff_attn_dim64_kappa1',
-    "amortized_vsw_lin_attn_dim64_proj64_kappa1",
 ]
 
 for model in list_full_models:

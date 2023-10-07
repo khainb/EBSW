@@ -10,20 +10,7 @@ OUT_DIR = osp.join(ROOT_DIR, "output")
 os.makedirs(OUT_DIR, exist_ok=True)
 list_models = [
     "raw",
-    # 'chamfer',
-    # 'emd',
     "swd",
-    "msw_iter50",
-    # 'asw',
-    "vsw_kappa1_iter50",
-    # 'amortized_msw_linear',
-    # 'amortized_msw_glinear',
-    # 'amortized_msw_nonlinear',
-    # 'amortized_vsw_linear_kappa1',
-    # 'amortized_vsw_glinear_kappa1',
-    # 'amortized_vsw_nonlinear_kappa1',
-    # 'amortized_vsw_eff_attn_dim64_kappa1',
-    "amortized_vsw_lin_attn_dim64_proj64_kappa1",
 ]
 
 NUM_SAMPLES = 50

@@ -14,7 +14,7 @@
     "root": "dataset/dataset/modelnet40_ply_hdf5_2048/",
     "num_workers": 0,
     "shuffle": false,
-    "num_projs": 1000,
+    "num_projs": 10000,
     "num_points": 2048,
 
     "architecture": "pointnet",
