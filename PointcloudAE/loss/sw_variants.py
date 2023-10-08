@@ -109,23 +109,6 @@ def compute_projected_distances(x, y, projections, degree=2.0, **kwargs):
     return _sort_pow_p_get_sum
 
 
-def projx(x: torch.Tensor) -> torch.Tensor:
-    return x / x.norm(dim=-1, keepdim=True)
-
-
-def expmap(x: torch.Tensor, u: torch.Tensor) -> torch.Tensor:
-    EPS = {torch.float32: 1e-4, torch.float64: 1e-7}
-    norm_u = u.norm(dim=-1, keepdim=True)
-    exp = x * torch.cos(norm_u) + u * torch.sin(norm_u) / norm_u
-    retr = projx(x + u)
-    cond = norm_u > EPS[norm_u.dtype]
-    return torch.where(cond, exp, retr)
-
-
-def proju(x: torch.Tensor, u: torch.Tensor) -> torch.Tensor:
-    u = u - (x * u).sum(dim=-1, keepdim=True) * x
-    return u
-
 
 class EBSW(nn.Module):
     def __init__(self, L, device="cuda", **kwargs):
