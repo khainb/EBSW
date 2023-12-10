@@ -30,7 +30,7 @@ target=A[31]
 source=A[30]
 device='cpu'
 f_type='identity'
-learning_rate = 0.01
+learning_rate = 0.0001
 N_step=500
 eps=0
 L=10
@@ -156,7 +156,7 @@ for L in [10,100]:
                 caltimes.append(cal_time)
                 distances.append(distance)
             optimizer.zero_grad()
-            sw= N*ISNPSW(X,Y,L=1,T=L,f_type=f_type,eps=eps,copy=copy)
+            sw= N*ISEBSW(X,Y,L=1,T=L,f_type=f_type,eps=eps,copy=copy)
             sw.backward()
             optimizer.step()
         points.append(Y.clone().data.numpy())
