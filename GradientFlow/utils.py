@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 import ot
-from power_spherical import PowerSpherical
+from von_mises_fisher import VonMisesFisher
 def compute_true_Wasserstein(X,Y,p=2):
-    M = ot.dist(X.detach().numpy(), Y.detach().numpy())
+    M = ot.dist(X.cpu().detach().numpy(), Y.cpu().detach().numpy())
     a = np.ones((X.shape[0],)) / X.shape[0]
     b = np.ones((Y.shape[0],)) / Y.shape[0]
     return ot.emd2(a, b, M)
@@ -32,102 +32,11 @@ def one_dimensional_Wasserstein_prod(X,Y,theta,p):
                 - torch.sort(Y_prod, dim=0)[0]
         )
     )
-    wasserstein_distance = torch.mean(torch.pow(wasserstein_distance, p), dim=0,keepdim=True)
+    wasserstein_distance = torch.sum(torch.pow(wasserstein_distance, p), dim=0,keepdim=True)
     return wasserstein_distance
 
-def RPSW(X, Y, L=10, p=2, device="cpu", kappa=50):
-    dim = X.size(1)
-    theta = (X[np.random.choice(X.shape[0], L, replace=True)] - Y[np.random.choice(Y.shape[0], L, replace=True)])
-    theta = theta / torch.sqrt(torch.sum(theta ** 2, dim=1, keepdim=True))
-    ps = PowerSpherical(
-        loc=theta,
-        scale=torch.full((theta.shape[0],), kappa, device=device),
-    )
-    theta = ps.rsample()
-    sw = one_dimensional_Wasserstein_prod(X, Y, theta, p=p).mean()
-    return torch.pow(sw, 1. / p)
-
-def EBRPSW(X, Y, L=10, p=2, device="cpu", kappa=50):
-    dim = X.size(1)
-    theta = (X[np.random.choice(X.shape[0], L, replace=True)] - Y[np.random.choice(Y.shape[0], L, replace=True)])
-    theta = theta / torch.sqrt(torch.sum(theta ** 2, dim=1, keepdim=True))
-    ps = PowerSpherical(
-        loc=theta,
-        scale=torch.full((theta.shape[0],), kappa, device=device),
-    )
-    theta = ps.rsample()
-    wasserstein_distances = one_dimensional_Wasserstein_prod(X, Y, theta, p=p)
-    wasserstein_distances = wasserstein_distances.view(1, L)
-    weights = torch.softmax(wasserstein_distances, dim=1)
-    sw = torch.sum(weights * wasserstein_distances, dim=1).mean()
-    return torch.pow(sw, 1. / p)
-
-def DSW(X, Y, L=10, kappa=50, p=2, s_lr=0.1, n_lr=100, device="cpu"):
-    dim = X.size(1)
-    epsilon = torch.randn((1, dim), device=device, requires_grad=True)
-    epsilon.data = epsilon.data / torch.sqrt(torch.sum(epsilon.data ** 2, dim=1, keepdim=True))
-    optimizer = torch.optim.SGD([epsilon], lr=s_lr)
-    X_detach = X.detach()
-    Y_detach = Y.detach()
-    for _ in range(n_lr - 1):
-        vmf = PowerSpherical(epsilon, torch.full((1,), kappa, device=device))
-        theta = vmf.rsample((L,)).view(L, -1)
-        negative_sw = -torch.pow(one_dimensional_Wasserstein_prod(X_detach, Y_detach, theta, p=p).mean(), 1. / p)
-        optimizer.zero_grad()
-        negative_sw.backward()
-        optimizer.step()
-        epsilon.data = epsilon.data / torch.sqrt(torch.sum(epsilon.data ** 2, dim=1, keepdim=True))
-    vmf = PowerSpherical(epsilon, torch.full((1,), kappa, device=device))
-    theta = vmf.rsample((L,)).view(L, -1)
-    sw = one_dimensional_Wasserstein_prod(X, Y, theta, p=p).mean()
-    return torch.pow(sw, 1. / p)
-def ISEBRPSW(X, Y, L=1,T=10, p=2, f_type="poly",eps=0,copy=True, rho=2, device="cpu"):
-    dim = X.size(1)
-    theta = (X[np.random.choice(X.shape[0], L*T, replace=True)] - Y[
-        np.random.choice(Y.shape[0], L*T, replace=True)])
-    theta = theta / torch.sqrt(torch.sum(theta ** 2, dim=1, keepdim=True))
-    theta = theta +  torch.randn(L*T, dim, device=device)
-    theta = theta / torch.sqrt(torch.sum(theta ** 2, dim=1, keepdim=True))
-    wasserstein_distances = one_dimensional_Wasserstein_prod(X, Y, theta, p=p)
-    wasserstein_distances = wasserstein_distances.view(L, T)
-    if (f_type == "exp"):
-        weights = torch.softmax(wasserstein_distances, dim=1)
-    elif (f_type == "identity"):
-        weights = wasserstein_distances + eps
-        weights = weights / torch.sum(weights, dim=1, keepdim=True)
-    elif (f_type == "poly"):
-        weights = wasserstein_distances ** rho + eps
-        weights = weights / torch.sum(weights, dim=1, keepdim=True)
-    if (copy):
-        weights = weights.detach()
-    sw = torch.sum(weights * wasserstein_distances, dim=1).mean()
-    return torch.pow(sw, 1. / p)
 
 
-def ISEBPSRPSW(X, Y, L=1,T=10, p=2, f_type="poly",eps=0,copy=True, rho=2,kappa=50, device="cpu"):
-    dim = X.size(1)
-    theta = (X[np.random.choice(X.shape[0], L*T, replace=True)] - Y[
-        np.random.choice(Y.shape[0], L*T, replace=True)])
-    theta = theta / torch.sqrt(torch.sum(theta ** 2, dim=1, keepdim=True))
-    ps = PowerSpherical(
-        loc=theta,
-        scale=torch.full((theta.shape[0],), kappa),
-    )
-    theta = ps.rsample()
-    wasserstein_distances = one_dimensional_Wasserstein_prod(X, Y, theta, p=p)
-    wasserstein_distances = wasserstein_distances.view(L, T)
-    if (f_type == "exp"):
-        weights = torch.softmax(wasserstein_distances, dim=1)
-    elif (f_type == "identity"):
-        weights = wasserstein_distances + eps
-        weights = weights / torch.sum(weights, dim=1, keepdim=True)
-    elif (f_type == "poly"):
-        weights = wasserstein_distances ** rho + eps
-        weights = weights / torch.sum(weights, dim=1, keepdim=True)
-    if (copy):
-        weights = weights.detach()
-    sw = torch.sum(weights * wasserstein_distances, dim=1).mean()
-    return torch.pow(sw, 1. / p)
 def MaxSW(X,Y,p=2,s_lr=0.1,n_lr=100,device="cpu",adam=False):
     dim = X.size(1)
     theta = torch.randn((1, dim), device=device, requires_grad=True)
@@ -147,7 +56,7 @@ def MaxSW(X,Y,p=2,s_lr=0.1,n_lr=100,device="cpu",adam=False):
     sw = one_dimensional_Wasserstein_prod(X, Y,theta, p=p).mean()
     return torch.pow(sw,1./p)
 
-def DSW(X,Y,L=10,kappa=50,p=2,s_lr=0.1,n_lr=100,device="cpu"):
+def vDSW(X,Y,L=10,kappa=50,p=2,s_lr=0.1,n_lr=100,device="cpu"):
     dim = X.size(1)
     epsilon = torch.randn((1, dim), device=device, requires_grad=True)
     epsilon.data = epsilon.data / torch.sqrt(torch.sum(epsilon.data ** 2, dim=1,keepdim=True))
@@ -155,15 +64,15 @@ def DSW(X,Y,L=10,kappa=50,p=2,s_lr=0.1,n_lr=100,device="cpu"):
     X_detach = X.detach()
     Y_detach = Y.detach()
     for _ in range(n_lr-1):
-        vmf = PowerSpherical(epsilon, torch.full((1,), kappa, device=device))
-        theta = vmf.rsample((L,)).view(L, -1)
+        vmf = VonMisesFisher(epsilon, torch.full((1, 1), kappa, device=device))
+        theta = vmf.rsample(L).view(L, -1)
         negative_sw = -torch.pow(one_dimensional_Wasserstein_prod(X_detach,Y_detach,theta,p=p).mean(),1./p)
         optimizer.zero_grad()
         negative_sw.backward()
         optimizer.step()
         epsilon.data = epsilon.data / torch.sqrt(torch.sum(epsilon.data ** 2, dim=1,keepdim=True))
-    vmf = PowerSpherical(epsilon, torch.full((1,), kappa, device=device))
-    theta = vmf.rsample((L,)).view(L, -1)
+    vmf = VonMisesFisher(epsilon, torch.full((1, 1), kappa, device=device))
+    theta = vmf.rsample(L).view(L, -1)
     sw = one_dimensional_Wasserstein_prod(X, Y,theta, p=p).mean()
     return torch.pow(sw,1./p)
 
