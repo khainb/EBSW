@@ -1,0 +1,7 @@
+torch
+torchvision
+open3d
+scikit-learn
+tqdm
+h5py
+future

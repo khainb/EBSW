@@ -16,6 +16,11 @@ Please CITE our paper whenever this repository is used to help produce published
 
 This implementation is made by [Khai Nguyen](https://khainb.github.io).
 
+## Requirements
+To install the required python packages, run
+```
+pip install -r requirements.txt
+```
 
 ## What is included?
 * Implementation of EBSW
