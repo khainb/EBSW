@@ -21,4 +21,4 @@ class EMD(nn.Module):
         x, y: [batch size, num points in point cloud, 3]
         """
         num_points = x.size(1)
-        return {"loss": emd_approx(x, y).mean() * num_points}
+        return {"loss": emd_approx(x, y).mean() }
