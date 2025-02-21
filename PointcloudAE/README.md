@@ -77,7 +77,6 @@ optional arguments:
   --estimation_type           estimation of EBSWprivate [IS,SIR,IMH,RMH]
   --gradient_type             gradient estimator [independent (copy), normal (reinforce)]
   --inter_dim                 dimension of keys
-  --proj_dim                  projected dimension in linformer
   --kappa                     scale of vMF distribution
 ```
 

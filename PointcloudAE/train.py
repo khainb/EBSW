@@ -11,7 +11,6 @@ import numpy as np
 import torch
 from add_noise_to_data.random_noise import RandomNoiseAdder
 from dataset import ShapeNetCore55XyzOnlyDataset
-from evaluator import Evaluator
 from logger import Logger
 from loss import SWD, MaxSW, VSW,  EBSW
 from models import PointCapsNet, PointNetAE
@@ -40,10 +39,9 @@ def main():
     parser.add_argument("--data_path", help="path to data")
     parser.add_argument("--loss", default="swd",
                         help="[swd, msw, vsw, ebsw]")
-    parser.add_argument("--f_type", default="linear",
+    parser.add_argument("--f_type", default="exp",
                         help="[exp,identity]")
     parser.add_argument("--inter_dim", default=64, type=int, help="dimension of keys")
-    parser.add_argument("--proj_dim", default=64, type=int, help="projected dimension in linformer")
     parser.add_argument("--proj_sharing", action="store_true", help="sharing projection for key and value")
     parser.add_argument("--kappa", default=1.0, type=float, help="scale of vMF distribution")
     parser.add_argument("--autoencoder", default="pointnet", help="[pointnet, pcn]")
